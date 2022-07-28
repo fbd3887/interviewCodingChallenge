@@ -19,16 +19,34 @@
  * will pass valid data to your function.
  */
 
-function checkForBingo (bingoCard, drawnNumbers) {
-  // this code for debug purposes, you can remove.
-  console.log('Drawn Numbers: ' + JSON.stringify(drawnNumbers));
+ function isWinner(line, calledNumbers) {
+  const missingIndex = line
+    .filter(Number)
+    .findIndex((value) => !calledNumbers.includes(value));
+  return line.length > 0 && missingIndex === -1;
+}
 
-  for (let i=0, len=bingoCard.length; i<len; i++) {
-    let row = Math.floor(i/5);
-    let col = i % 5;
-   //  console.log(`${row},${col}: ${bingoCard[i]}`);
+function checkForBingo(bingoCard, drawnNumbers) {
+  if (drawnNumbers.length < 4) return false;
+  const getRow = (r) =>
+    bingoCard.filter((item, index) => index >= r * 5 && index < (r + 1) * 5);
+  const getCol = (c) => bingoCard.filter((item, index) => index % 5 === c);
+  const getDiag = (n) =>
+    n > 1
+      ? []
+      : bingoCard.filter((item, index) =>
+          n === 0
+            ? index % 5 === Math.floor(index / 5)
+            : index % 5 === 4 - Math.floor(index / 5)
+        );
+
+  for (let i = 0; i < 5; i++) {
+    if (isWinner(getDiag(i), drawnNumbers)) return "true : diagonal + Free";
+    if (isWinner(getRow(i), drawnNumbers))
+      return `true: with Row${i === 2 ? " and Free" : ""}`;
+    if (isWinner(getCol(i), drawnNumbers))
+      return `true: with Col${i === 2 ? " and Free" : ""}`;
   }
-
   return false;
 }
 
